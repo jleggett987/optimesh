@@ -120,6 +120,8 @@ optimesh/
     
       architecture.md
       roadmap.md
+      system-overview.md — high-level platform flow and component summary
+      architecture-diagram.md — notes and structure for the visual architecture diagram
   
     frontend/
     
