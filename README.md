@@ -129,6 +129,10 @@ optimesh/
           main.dart   
     wasm/
       engine/
+        README.md
+        Cargo.toml
+        src/
+          lib.rs
     infra/
       aws/
     scripts/
