@@ -1,0 +1,10 @@
+[package]
+name = "optimesh_engine"
+version = "0.1.0"
+edition = "2021"
+description = "WebAssembly execution engine for the OptiMesh distributed browser compute platform."
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
