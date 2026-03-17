@@ -117,24 +117,20 @@ Planned repository layout:
 optimesh/
 
     docs/
-    
       architecture.md
       roadmap.md
       system-overview.md — high-level platform flow and component summary
       architecture-diagram.md — notes and structure for the visual architecture diagram
-  
     frontend/
-    
       flutter_web/
-  
+        README.md
+        pubspec.yaml
+        lib/
+          main.dart   
     wasm/
-    
       engine/
-  
     infra/
-    
       aws/
-  
     scripts/
 
 ---
