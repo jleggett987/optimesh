@@ -105,59 +105,224 @@ class _OptiMeshHomePageState extends State<OptiMeshHomePage> {
     });
   }
 
-  Widget _buildStat(String label, String value) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.black12),
-        ),
-        child: Column(
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
+  Color _statusColor() {
+    if (_isRunning) {
+      return Colors.orange;
+    }
+    return Colors.green;
+  }
+
+  Widget _buildStatCard({
+    required IconData icon,
+    required String label,
+    required String value,
+    Color? valueColor,
+  }) {
+    return Container(
+      width: 220,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black12),
+        color: Theme.of(context).colorScheme.surface,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 20),
+          const SizedBox(height: 14),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: valueColor,
+                ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildInfoCard(String title, String value) {
+  Widget _buildInfoCard({
+    required String title,
+    required String value,
+    IconData? icon,
+  }) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.black12),
-        borderRadius: BorderRadius.circular(12),
+        color: Theme.of(context).colorScheme.surface,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 20),
+            const SizedBox(width: 12),
+          ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  value,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeaderCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.black12),
+        color: Theme.of(context).colorScheme.surface,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            title,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-            ),
+            'OptiMesh Browser Node',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
-          const SizedBox(height: 8),
-          Text(value),
+          const SizedBox(height: 10),
+          Text(
+            'This dashboard simulates a distributed browser compute node that registers with a control plane, fetches bounded tasks, executes them in a Web Worker, and submits results.',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const SizedBox(height: 18),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              FilledButton.icon(
+                onPressed: _isRunning ? null : _executeNextTask,
+                icon: const Icon(Icons.play_arrow),
+                label: const Text('Fetch and Execute Task'),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: _statusColor(),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    _status,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                ],
+              ),
+              if (_isRunning)
+                const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2.4),
+                ),
+            ],
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildTaskHistoryCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black12),
+        color: Theme.of(context).colorScheme.surface,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Task History',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          const SizedBox(height: 12),
+          if (_taskHistory.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Text(
+                'No tasks executed yet.',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            )
+          else
+            ListView.separated(
+              itemCount: _taskHistory.length,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              separatorBuilder: (_, __) => const Divider(height: 16),
+              itemBuilder: (context, index) {
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(top: 2),
+                      child: Icon(Icons.memory, size: 18),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        _taskHistory[index],
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
     );
   }
 
@@ -169,75 +334,60 @@ class _OptiMeshHomePageState extends State<OptiMeshHomePage> {
       ),
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1000),
+          constraints: const BoxConstraints(maxWidth: 1180),
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Browser Compute Node',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Simulated control-plane flow: register node, fetch bounded task, execute in worker, and submit result.',
-                ),
-                const SizedBox(height: 20),
-                Row(
+                _buildHeaderCard(),
+                const SizedBox(height: 28),
+                _buildSectionTitle('Node Overview'),
+                const SizedBox(height: 14),
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 16,
                   children: [
-                    _buildStat('Node ID', _nodeId),
-                    const SizedBox(width: 16),
-                    _buildStat('Worker Status', _status),
-                    const SizedBox(width: 16),
-                    _buildStat('Tasks Completed', '$_tasksCompleted'),
+                    _buildStatCard(
+                      icon: Icons.computer,
+                      label: 'Node ID',
+                      value: _nodeId,
+                    ),
+                    _buildStatCard(
+                      icon: Icons.settings_input_component,
+                      label: 'Worker Status',
+                      value: _status,
+                      valueColor: _statusColor(),
+                    ),
+                    _buildStatCard(
+                      icon: Icons.check_circle_outline,
+                      label: 'Tasks Completed',
+                      value: '$_tasksCompleted',
+                    ),
                   ],
                 ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: _isRunning ? null : _executeNextTask,
-                      child: const Text('Fetch and Execute Task'),
-                    ),
-                    const SizedBox(width: 20),
-                    if (_isRunning) const CircularProgressIndicator(),
-                  ],
+                const SizedBox(height: 28),
+                _buildSectionTitle('Execution Details'),
+                const SizedBox(height: 14),
+                _buildInfoCard(
+                  title: 'Last Task ID',
+                  value: _lastTaskId,
+                  icon: Icons.tag,
                 ),
-                const SizedBox(height: 24),
-                _buildInfoCard('Last Task ID', _lastTaskId),
                 const SizedBox(height: 16),
-                _buildInfoCard('Last Task Type', _lastTaskType),
-                const SizedBox(height: 16),
-                _buildInfoCard('Last Task Result', _lastResult),
-                const SizedBox(height: 24),
-                const Text(
-                  'Task History',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                _buildInfoCard(
+                  title: 'Last Task Type',
+                  value: _lastTaskType,
+                  icon: Icons.category,
                 ),
-                const SizedBox(height: 10),
-                if (_taskHistory.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 24),
-                    child: Center(
-                      child: Text('No tasks executed yet.'),
-                    ),
-                  )
-                else
-                  ListView.builder(
-                    itemCount: _taskHistory.length,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        leading: const Icon(Icons.memory),
-                        title: Text(_taskHistory[index]),
-                      );
-                    },
-                  ),
+                const SizedBox(height: 16),
+                _buildInfoCard(
+                  title: 'Last Task Result',
+                  value: _lastResult,
+                  icon: Icons.receipt_long,
+                ),
+                const SizedBox(height: 28),
+                _buildTaskHistoryCard(),
               ],
             ),
           ),
