@@ -1,14 +1,16 @@
 class TaskHistoryEntry {
   final String taskId;
   final String taskType;
-  final int output;
+  final int samplesProcessed;
+  final double estimate;
   final bool accepted;
   final DateTime completedAt;
 
   const TaskHistoryEntry({
     required this.taskId,
     required this.taskType,
-    required this.output,
+    required this.samplesProcessed,
+    required this.estimate,
     required this.accepted,
     required this.completedAt,
   });
