@@ -1,4 +1,3 @@
-// ignore: avoid_web_libraries_in_flutter, deprecated_member_use
 import 'dart:html' as html;
 import 'package:flutter/material.dart';
 
@@ -32,9 +31,16 @@ class OptiMeshHomePage extends StatefulWidget {
 
 class _OptiMeshHomePageState extends State<OptiMeshHomePage> {
   html.Worker? _worker;
+
+  final String _nodeId = "browser-node-001";
+
   bool _isRunning = false;
-  String _status = 'Idle';
-  String _result = 'No task executed yet.';
+  int _tasksCompleted = 0;
+
+  String _status = "Idle";
+  String _lastResult = "No tasks executed yet.";
+
+  final List<String> _taskHistory = [];
 
   @override
   void dispose() {
@@ -47,8 +53,7 @@ class _OptiMeshHomePageState extends State<OptiMeshHomePage> {
 
     setState(() {
       _isRunning = true;
-      _status = 'Running sample compute task...';
-      _result = 'Waiting for result...';
+      _status = "Executing task...";
     });
 
     _worker?.terminate();
@@ -59,103 +64,141 @@ class _OptiMeshHomePageState extends State<OptiMeshHomePage> {
 
       setState(() {
         _isRunning = false;
-        _status = 'Task completed';
-        _result =
-            'Task ${data["taskId"]}: output=${data["output"]}, iterations=${data["iterations"]}, status=${data["status"]}';
+        _tasksCompleted++;
+
+        _lastResult =
+            "Task ${data["taskId"]} completed → output=${data["output"]}";
+
+        _taskHistory.insert(
+            0, "Task ${data["taskId"]} → output ${data["output"]}");
+
+        _status = "Idle";
       });
     });
 
     _worker!.postMessage({
-      'taskId': 'task-001',
+      'taskId': 'task-${_tasksCompleted + 1}',
       'value': 21,
-      'iterations': 100000,
+      'iterations': 100000
     });
+  }
+
+  Widget _buildStat(String label, String value) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.black12),
+        ),
+        child: Column(
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(value,
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('OptiMesh'),
+        title: const Text("OptiMesh Node Dashboard"),
       ),
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 900),
+          constraints: const BoxConstraints(maxWidth: 1000),
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+
+                Text(
+                  "Browser Compute Node",
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+
+                const SizedBox(height: 20),
+
+                Row(
                   children: [
-                    Text(
-                      'Opt-in Distributed Browser Compute',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'This demo shows a bounded compute task executed in a browser Web Worker and returned to the Flutter Web client.',
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                        children: [
-                          ElevatedButton(
-                            onPressed: _isRunning ? null : _runSampleTask,
-                            child: const Text('Run Sample Task'),
-                          ),
-                          const SizedBox(width: 16),
-                          Text(
-                            _status,
-                            style: const TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Result',
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Node Status',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black12),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text("Node ID: browser-node-001"),
-                          const SizedBox(height: 8),
-                          Text("Status: $_status"),
-                          const SizedBox(height: 8),
-                          Text("Last Task Result: $_result"),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black12),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(_result),
-                    ),
+                    _buildStat("Node ID", _nodeId),
+                    const SizedBox(width: 16),
+                    _buildStat("Worker Status", _status),
+                    const SizedBox(width: 16),
+                    _buildStat("Tasks Completed", "$_tasksCompleted"),
                   ],
                 ),
-              ),
+
+                const SizedBox(height: 30),
+
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: _isRunning ? null : _runSampleTask,
+                      child: const Text("Execute Task"),
+                    ),
+                    const SizedBox(width: 20),
+                    if (_isRunning)
+                      const CircularProgressIndicator(),
+                  ],
+                ),
+
+                const SizedBox(height: 30),
+
+                const Text(
+                  "Last Task Result",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(_lastResult),
+                ),
+
+                const SizedBox(height: 30),
+
+                const Text(
+                  "Task History",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _taskHistory.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(_taskHistory[index]),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         ),
