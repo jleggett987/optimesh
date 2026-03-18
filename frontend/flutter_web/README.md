@@ -1,39 +1,166 @@
-# OptiMesh Flutter Web Client
+# OptiMesh
 
-This directory contains the frontend client for OptiMesh.
+**Opt-in distributed browser compute platform**
 
-The frontend is planned as a Flutter Web application that provides:
+OptiMesh is a portfolio project demonstrating how browser clients can participate in distributed compute workloads using modern web technologies.
 
-- opt-in participation controls
-- workload visibility
-- compute status display
-- task lifecycle feedback
-- communication with the OptiMesh control plane
+The project explores how lightweight browser nodes can register with a control plane, fetch bounded workloads, execute them in a Web Worker, and return results — all while maintaining transparency and user control.
 
-## Purpose
+This repository showcases an experimental distributed compute architecture built with:
 
-This client is intentionally designed to emphasize transparency and user control.
+- Flutter Web  
+- Web Workers  
+- Monte Carlo workloads  
+- Simulated control plane  
+- Serverless-ready architecture patterns  
 
-OptiMesh is not a hidden background compute system. The frontend should make participation explicit, understandable, and interruptible.
+The goal is to explore **ethical, opt-in distributed compute** rather than hidden or exploitative browser mining.
 
-## Early Scope
+---
 
-The first frontend milestone will focus on:
+## 🚀 Live Demo Features
 
-- a landing shell
-- participation toggle
-- node status display
-- mock task assignment state
-- basic activity panel
+The current demo simulates a **browser compute node dashboard**.
 
-## Planned Tech
+Users can start a node, process workloads, and observe how tasks contribute to a rolling distributed result.
 
-- Flutter Web
-- Dart
-- Web Workers
-- browser storage for local state
-- API integration with AWS serverless services
+### Node Simulation
 
-## Status
+The browser acts as a compute node that can:
 
-Frontend shell in progress.
+- Register with a control plane  
+- Fetch compute tasks  
+- Execute workloads in a Web Worker  
+- Submit results back to the control plane  
+
+### Continuous Task Execution
+
+When the node is started:
+
+- Workloads execute continuously  
+- Tasks are processed sequentially  
+- Results are submitted automatically  
+
+### Monte Carlo Distributed Simulation
+
+Each task performs a Monte Carlo simulation estimating π.
+
+The dashboard shows:
+
+- Samples processed  
+- Last task estimate  
+- Rolling π estimate across tasks  
+- Task history with timestamps  
+
+### 📈 Live Estimate Trend Chart
+
+The dashboard includes a real-time chart showing:
+
+- Recent task estimates  
+- Convergence toward π  
+- Reference line for the true value of π  
+
+This demonstrates how distributed tasks contribute to a **rolling aggregate result**.
+
+### Activity Feed
+
+The dashboard logs key events such as:
+
+- Node registration  
+- Task fetch  
+- Task execution  
+- Result submission  
+- Result acceptance  
+
+### Worker Isolation
+
+All compute tasks run inside a **Web Worker** so that:
+
+- The UI remains responsive  
+- Workloads are isolated from the main thread  
+
+---
+
+## 🧠 Architecture Overview
+
+OptiMesh follows a simplified distributed compute architecture.
+
+### Browser Node
+
+- Flutter Web UI  
+- Web Worker execution engine  
+- Node status and telemetry dashboard  
+
+### Control Plane (Simulated)
+
+- Node registration  
+- Task assignment  
+- Result acceptance  
+
+### Compute Engine
+
+- Bounded workloads  
+- Monte Carlo simulation tasks  
+- Sandboxed execution  
+
+The architecture is designed so the control plane can later be replaced with a **real serverless backend**.
+
+---
+
+## 🛠 Technology Stack
+
+### Frontend
+
+- Flutter Web  
+- Dart  
+
+### Compute Execution
+
+- Web Workers  
+- JavaScript worker runtime  
+
+### Architecture
+
+- Distributed task model  
+- Control-plane simulation  
+- Bounded compute workloads  
+
+---
+
+## 🎯 Why This Project Exists
+
+Many browser-based compute systems historically relied on:
+
+- Hidden mining scripts  
+- Non-transparent workloads  
+
+OptiMesh explores a different model:
+
+- Opt-in compute participation  
+- Transparent workloads  
+- Bounded execution time  
+- Visible telemetry for the user  
+
+The goal is to demonstrate how browser compute can be designed **ethically and transparently**.
+
+---
+
+## 📁 Repository Structure
+
+```bash
+optimesh/
+│
+├ docs/
+│ ├ architecture.md
+│ └ roadmap.md
+│
+├ frontend/
+│ └ flutter_web/
+│
+├ wasm/
+│ └ engine/
+│
+├ infra/
+│ └ aws/
+│
+└ scripts/
