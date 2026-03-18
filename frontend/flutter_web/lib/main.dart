@@ -46,6 +46,8 @@ class _OptiMeshHomePageState extends State<OptiMeshHomePage> {
   String _lastTaskId = 'None';
   String _lastTaskType = 'None';
 
+  OptiMeshTask? _currentTask;
+
   final List<String> _taskHistory = [];
 
   @override
@@ -67,6 +69,7 @@ class _OptiMeshHomePageState extends State<OptiMeshHomePage> {
 
     setState(() {
       _isRunning = true;
+      _currentTask = task;
       _status = 'Executing ${task.taskId}...';
       _lastTaskId = task.taskId;
       _lastTaskType = task.taskType;
@@ -260,6 +263,93 @@ class _OptiMeshHomePageState extends State<OptiMeshHomePage> {
     );
   }
 
+  Widget _buildCurrentTaskCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.black12),
+        color: Theme.of(context).colorScheme.surface,
+      ),
+      child: _currentTask == null
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Assigned Task',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'No task has been assigned yet.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Assigned Task',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: 14),
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 16,
+                  children: [
+                    _buildMiniTaskStat('Task ID', _currentTask!.taskId),
+                    _buildMiniTaskStat('Task Type', _currentTask!.taskType),
+                    _buildMiniTaskStat('Input Value', '${_currentTask!.value}'),
+                    _buildMiniTaskStat(
+                      'Iterations',
+                      '${_currentTask!.iterations}',
+                    ),
+                    _buildMiniTaskStat(
+                      'Max Duration',
+                      '${_currentTask!.maxDurationMs} ms',
+                    ),
+                  ],
+                ),
+              ],
+            ),
+    );
+  }
+
+  Widget _buildMiniTaskStat(String label, String value) {
+    return Container(
+      width: 180,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.black12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildTaskHistoryCard() {
     return Container(
       width: double.infinity,
@@ -366,6 +456,10 @@ class _OptiMeshHomePageState extends State<OptiMeshHomePage> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 28),
+                _buildSectionTitle('Assigned Workload'),
+                const SizedBox(height: 14),
+                _buildCurrentTaskCard(),
                 const SizedBox(height: 28),
                 _buildSectionTitle('Execution Details'),
                 const SizedBox(height: 14),
