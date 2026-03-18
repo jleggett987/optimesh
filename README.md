@@ -1,5 +1,6 @@
 # OptiMesh
 
+![OptiMesh Dashboard](frontend/flutter_web/web/docs/dashboard.png)
 **Opt-in distributed browser compute platform**
 
 OptiMesh is a portfolio project demonstrating how browser clients can participate in distributed compute workloads using modern web technologies.
