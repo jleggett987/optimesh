@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'models/task_model.dart';
 import 'services/mock_control_plane.dart';
+import 'models/task_history_entry.dart';
 
 void main() {
   runApp(const OptiMeshApp());
@@ -48,7 +49,7 @@ class _OptiMeshHomePageState extends State<OptiMeshHomePage> {
 
   OptiMeshTask? _currentTask;
 
-  final List<String> _taskHistory = [];
+  final List<TaskHistoryEntry> _taskHistory = [];
 
   @override
   void initState() {
@@ -92,11 +93,21 @@ class _OptiMeshHomePageState extends State<OptiMeshHomePage> {
         _isRunning = false;
         _tasksCompleted++;
         _status = 'Idle';
+        final bool accepted = submission['accepted'] as bool;
+        final int outputValue = submission['output'] as int;
+
         _lastResult =
-            'Task ${submission["taskId"]} accepted with output=${submission["output"]}';
+            'Task ${submission["taskId"]} ${accepted ? "accepted" : "rejected"} with output=$outputValue';
+
         _taskHistory.insert(
           0,
-          '${submission["taskId"]} • ${task.taskType} • output=${submission["output"]}',
+          TaskHistoryEntry(
+            taskId: submission['taskId'] as String,
+            taskType: task.taskType,
+            output: outputValue,
+            accepted: accepted,
+            completedAt: DateTime.now(),
+          ),
         );
       });
     });
@@ -350,62 +361,78 @@ class _OptiMeshHomePageState extends State<OptiMeshHomePage> {
     );
   }
 
-  Widget _buildTaskHistoryCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.black12),
-        color: Theme.of(context).colorScheme.surface,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Task History',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          const SizedBox(height: 12),
-          if (_taskHistory.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Text(
-                'No tasks executed yet.',
-                style: Theme.of(context).textTheme.bodyMedium,
+ Widget _buildTaskHistoryCard() {
+  return Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(18),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: Colors.black12),
+      color: Theme.of(context).colorScheme.surface,
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Task History',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
-            )
-          else
-            ListView.separated(
-              itemCount: _taskHistory.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              separatorBuilder: (_, __) => const Divider(height: 16),
-              itemBuilder: (context, index) {
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 2),
-                      child: Icon(Icons.memory, size: 18),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        _taskHistory[index],
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ),
-                  ],
-                );
-              },
+        ),
+        const SizedBox(height: 12),
+        if (_taskHistory.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Text(
+              'No tasks executed yet.',
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
-        ],
-      ),
-    );
-  }
+          )
+        else
+          ListView.separated(
+            itemCount: _taskHistory.length,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            separatorBuilder: (_, __) => const Divider(height: 16),
+            itemBuilder: (context, index) {
+              final entry = _taskHistory[index];
+
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    entry.accepted ? Icons.check_circle : Icons.cancel,
+                    size: 18,
+                    color: entry.accepted ? Colors.green : Colors.red,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${entry.taskId} • ${entry.taskType}',
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Output: ${entry.output} • Status: ${entry.statusLabel} • Completed: ${entry.formattedTimestamp}',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+      ],
+    ),
+  );
+}
 
   Widget _buildSectionTitle(String title) {
     return Text(
