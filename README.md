@@ -1,322 +1,166 @@
 # OptiMesh
 
-**Opt-in distributed browser compute platform built with Flutter Web, Web Workers, WebAssembly, and AWS serverless.**
+**Opt-in distributed browser compute platform**
 
-OptiMesh is an experimental platform exploring how modern browsers can participate in **transparent, user-consented distributed computing networks**.
+OptiMesh is a portfolio project demonstrating how browser clients can participate in distributed compute workloads using modern web technologies.
 
-Instead of hidden background mining or opaque resource usage, OptiMesh is designed around:
+The project explores how lightweight browser nodes can register with a control plane, fetch bounded workloads, execute them in a Web Worker, and return results — all while maintaining transparency and user control.
 
-- explicit user participation
-- bounded workloads
-- transparent compute usage
-- platform-level visibility and control
+This repository showcases an experimental distributed compute architecture built with:
 
-This repository is being developed as a **systems architecture portfolio project** demonstrating distributed platform design, browser compute execution, serverless infrastructure, and ethical distributed computing models.
+- Flutter Web  
+- Web Workers  
+- Monte Carlo workloads  
+- Simulated control plane  
+- Serverless-ready architecture patterns  
 
----
-
-# Why OptiMesh Exists
-
-Modern browsers are powerful compute environments capable of performing meaningful workloads.
-
-However, most distributed browser compute platforms historically relied on:
-
-- hidden background mining
-- non-consensual compute usage
-- opaque execution models
-
-OptiMesh explores a different model where users can **voluntarily contribute idle browser compute** toward useful workloads.
-
-Possible workloads include:
-
-- simulation tasks
-- analytics workloads
-- deterministic research computations
-- distributed benchmarking
-- controlled AI inference batches
-
-The core focus of this project is **architecture clarity and ethical design**, not stealth compute.
+The goal is to explore **ethical, opt-in distributed compute** rather than hidden or exploitative browser mining.
 
 ---
 
-# High-Level Architecture
+## 🚀 Live Demo Features
 
-OptiMesh is composed of four primary layers.
+The current demo simulates a **browser compute node dashboard**.
 
-## 1. Browser Client (Flutter Web)
+Users can start a node, process workloads, and observe how tasks contribute to a rolling distributed result.
 
-The browser client provides the user interface and controls participation in the OptiMesh network.
+### Node Simulation
 
-Responsibilities include:
+The browser acts as a compute node that can:
 
-- participation opt-in / opt-out
-- workload visibility
-- compute activity display
-- node registration
-- communication with the control plane
+- Register with a control plane  
+- Fetch compute tasks  
+- Execute workloads in a Web Worker  
+- Submit results back to the control plane  
 
-Technologies:
+### Continuous Task Execution
 
-- Flutter Web
-- Dart
-- Web Workers
-- browser storage
+When the node is started:
 
----
+- Workloads execute continuously  
+- Tasks are processed sequentially  
+- Results are submitted automatically  
 
-## 2. Execution Layer
+### Monte Carlo Distributed Simulation
 
-Workloads run safely inside the browser using isolated execution environments.
+Each task performs a Monte Carlo simulation estimating π.
 
-Responsibilities include:
+The dashboard shows:
 
-- background compute execution
-- task lifecycle management
-- resource constraints
-- safe interruption
+- Samples processed  
+- Last task estimate  
+- Rolling π estimate across tasks  
+- Task history with timestamps  
 
-Technologies:
+### 📈 Live Estimate Trend Chart
 
-- Web Workers
-- WebAssembly
-- sandboxed compute tasks
+The dashboard includes a real-time chart showing:
 
----
+- Recent task estimates  
+- Convergence toward π  
+- Reference line for the true value of π  
 
-## 3. Control Plane (AWS Serverless)
+This demonstrates how distributed tasks contribute to a **rolling aggregate result**.
 
-The control plane coordinates participating nodes and distributes workloads.
+### Activity Feed
 
-Responsibilities include:
+The dashboard logs key events such as:
 
-- node registration
-- task assignment
-- workload coordination
-- result collection
-- task state tracking
+- Node registration  
+- Task fetch  
+- Task execution  
+- Result submission  
+- Result acceptance  
 
-Planned infrastructure:
+### Worker Isolation
 
-- AWS API Gateway
-- AWS Lambda
-- DynamoDB
-- SQS
-- CloudWatch
+All compute tasks run inside a **Web Worker** so that:
+
+- The UI remains responsive  
+- Workloads are isolated from the main thread  
 
 ---
 
-## 4. Verification & Rewards Layer
+## 🧠 Architecture Overview
 
-Distributed workloads require trust mechanisms to ensure returned results are valid.
+OptiMesh follows a simplified distributed compute architecture.
 
-Possible approaches include:
+### Browser Node
 
-- redundant task execution
-- probabilistic verification
-- deterministic workload validation
+- Flutter Web UI  
+- Web Worker execution engine  
+- Node status and telemetry dashboard  
 
-Future versions may explore reward models such as:
+### Control Plane (Simulated)
 
-- compute credits
-- contribution scoring
-- tokenized incentives
+- Node registration  
+- Task assignment  
+- Result acceptance  
 
----
+### Compute Engine
 
-## System Architecture Diagram
+- Bounded workloads  
+- Monte Carlo simulation tasks  
+- Sandboxed execution  
 
-```mermaid
-flowchart LR
-
-User[User Browser]
-Client[Flutter Web Client]
-Worker[Web Worker Execution]
-WASM[WASM Compute Engine]
-
-API[AWS API Gateway]
-Lambda[AWS Lambda Control Plane]
-Queue[SQS Task Queue]
-DB[DynamoDB Task Metadata]
-
-User --> Client
-Client --> Worker
-Worker --> WASM
-
-Client --> API
-API --> Lambda
-Lambda --> Queue
-Queue --> Lambda
-Lambda --> DB
-
-Lambda --> Client
-Client --> Worker
-Worker --> Client
-Client --> API
-```
-# Project Documentation
-
-Detailed documentation is located in the `docs/` directory.
-
-Architecture and planning documents include:
-
-- **Architecture Overview** — `docs/architecture.md`
-- **System Overview** — `docs/system-overview.md`
-- **Architecture Diagram Notes** — `docs/architecture-diagram.md`
-- **Development Roadmap** — `docs/roadmap.md`
-
-Backend platform planning:
-
-- **AWS Control Plane Overview** — `infra/aws/README.md`
-- **API Contract (Draft)** — `infra/aws/api-contract.md`
+The architecture is designed so the control plane can later be replaced with a **real serverless backend**.
 
 ---
 
-# Repository Structure
+## 🛠 Technology Stack
 
-```
+### Frontend
+
+- Flutter Web  
+- Dart  
+
+### Compute Execution
+
+- Web Workers  
+- JavaScript worker runtime  
+
+### Architecture
+
+- Distributed task model  
+- Control-plane simulation  
+- Bounded compute workloads  
+
+---
+
+## 🎯 Why This Project Exists
+
+Many browser-based compute systems historically relied on:
+
+- Hidden mining scripts  
+- Non-transparent workloads  
+
+OptiMesh explores a different model:
+
+- Opt-in compute participation  
+- Transparent workloads  
+- Bounded execution time  
+- Visible telemetry for the user  
+
+The goal is to demonstrate how browser compute can be designed **ethically and transparently**.
+
+---
+
+## 📁 Repository Structure
+
+```bash
 optimesh/
-
-docs/
-  architecture.md
-  system-overview.md
-  architecture-diagram.md
-  roadmap.md
-
-frontend/
-  flutter_web/
-    README.md
-    pubspec.yaml
-    lib/main.dart
-
-wasm/
-  engine/
-    README.md
-    Cargo.toml
-    src/lib.rs
-
-infra/
-  aws/
-    README.md
-    architecture-notes.md
-    api-contract.md
-
-scripts/
-```
-
----
-
-# Development Roadmap
-
-The project will be implemented incrementally.
-
-## Phase 1 — Repository Foundation
-- public GitHub repository
-- architecture documentation
-- roadmap documentation
-- project structure
-
-## Phase 2 — Browser Client
-- Flutter Web interface
-- participation controls
-- compute status display
-
-## Phase 3 — Execution Engine
-- Web Worker compute tasks
-- task lifecycle control
-- bounded execution model
-
-## Phase 4 — WebAssembly Integration
-- high-performance compute modules
-- worker + WASM execution flow
-- deterministic sample workloads
-
-## Phase 5 — AWS Control Plane
-- node registration
-- workload assignment endpoints
-- result submission
-- DynamoDB task metadata
-
-## Phase 6 — Verification Layer
-- deterministic validation tasks
-- duplicate execution strategy
-- result acceptance logic
-
-## Phase 7 — Portfolio Demonstration
-- architecture diagrams
-- screenshots
-- example workloads
-- implementation notes
-
----
-
-# Ethical Design
-
-OptiMesh is intentionally designed to avoid problematic practices commonly associated with browser compute platforms.
-
-This project explicitly avoids:
-
-- hidden crypto mining
-- non-consensual compute usage
-- background execution without visibility
-- opaque compute activity
-
-Participation must always remain **transparent and user-controlled**.
-
----
-
-# Project Status
-
-Current project status is tracked in:
-
-`PROJECT_STATUS.md`
-
-The repository currently includes:
-
-- architecture documentation
-- development roadmap
-- frontend shell
-- WebAssembly engine scaffold
-- AWS control plane planning
-- API contract draft
-
-Implementation will proceed incrementally.
-
----
-
-# Contributing
-
-Contribution guidelines can be found in:
-
-`CONTRIBUTING.md`
-
-At the moment, the project is primarily being developed by the repository author while the architecture stabilizes.
-
----
-
-# Changelog
-
-Project change history is tracked in:
-
-`CHANGELOG.md`
-
----
-
-# Author
-
-Jason Leggett  
-Software Engineer / Engineering Leader
-
-Areas of focus across my work include:
-
-- distributed systems
-- platform architecture
-- Flutter applications
-- AWS serverless infrastructure
-- browser compute platforms
-- AI / ML systems
-
----
-
-# License
-
-MIT License
+│
+├ docs/
+│ ├ architecture.md
+│ └ roadmap.md
+│
+├ frontend/
+│ └ flutter_web/
+│
+├ wasm/
+│ └ engine/
+│
+├ infra/
+│ └ aws/
+│
+└ scripts/
