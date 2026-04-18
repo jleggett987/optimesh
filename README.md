@@ -3,6 +3,11 @@
 ![OptiMesh Dashboard](frontend/flutter_web/web/docs/dashboard.png)
 **Opt-in distributed browser compute platform**
 
+
+![License](https://img.shields.io/badge/license-MIT-blue)  
+![Status](https://img.shields.io/badge/status-active-success)  
+![Demo](https://img.shields.io/badge/demo-live-brightgreen)
+
 OptiMesh is a portfolio project demonstrating how browser clients can participate in distributed compute workloads using modern web technologies.
 
 The project explores how lightweight browser nodes can register with a control plane, fetch bounded workloads, execute them in a Web Worker, and return results — all while maintaining transparency and user control.
